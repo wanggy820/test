@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HYSwiftKeyChain : NSObject
 
-+ (NSString *)passwordForService:(nonnull NSString *)service account:(nonnull NSString *)account;
++ (NSString *)passwordForService:(NSString *)service account:(NSString *)account;
 + (BOOL)addItemWithService:(NSString *)service account:(NSString *)account password:(NSString *)password;
 + (BOOL)deletePasswordForService:(NSString *)serviceName account:(NSString *)account;
 

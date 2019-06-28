@@ -10,7 +10,7 @@
 
 @implementation HYSwiftKeyChain
 
-+ (NSString *)passwordForService:(nonnull NSString *)service account:(nonnull NSString *)account {
++ (NSString *)passwordForService:(NSString *)service account:(NSString *)account {
     //生成一个查询用的 可变字典
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:4];
     [dict setObject:service forKey:(__bridge id)kSecAttrService];    //输入service
@@ -23,11 +23,17 @@
     CFTypeRef result = NULL;
     status = SecItemCopyMatching((__bridge CFDictionaryRef)dict,&result);//核心API 查找是否匹配 和返回密码！
     if (status != errSecSuccess) { //判断状态
-        return nil;
+        if (result) {
+            CFRelease(result);
+        }
+        return @"";
     }
     
     //返回数据
     NSString *password = [[NSString alloc] initWithData:(__bridge_transfer NSData *)result encoding:NSUTF8StringEncoding];//转换成string
+    if (result) {
+        CFRelease(result);
+    }
     return password;
 }
 
@@ -41,8 +47,7 @@
     [searchDict setObject:(__bridge id)(kSecAttrSynchronizableAny) forKey:(__bridge id)(kSecAttrSynchronizable)];
     
     OSStatus status = -1;
-    CFTypeRef result = NULL;
-    status = SecItemCopyMatching((__bridge CFDictionaryRef)searchDict, &result);
+    status = SecItemCopyMatching((__bridge CFDictionaryRef)searchDict, NULL);
     if (status == errSecItemNotFound) {                                              //没有找到则添加
         NSData *passwordData = [password dataUsingEncoding:NSUTF8StringEncoding];    //把password 转换为 NSData
         [searchDict setObject:passwordData forKey:(__bridge id)kSecValueData];       //添加密码
@@ -53,6 +58,7 @@
         [dict setObject:passwordData forKey:(__bridge id)kSecValueData];             //添加密码
         status = SecItemUpdate((__bridge CFDictionaryRef)searchDict, (__bridge CFDictionaryRef)dict);//!!!!关键的更新API
     }
+    
     return (status == errSecSuccess);
 }
 

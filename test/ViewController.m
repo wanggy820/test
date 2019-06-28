@@ -45,8 +45,8 @@
     NSDictionary *dict = @{@"cc":@(NO)};
     BOOL sd = dict[@"cc"];
     NSLog(@"%d", sd);
-    
-
+    [HYSwiftKeyChain addItemWithService:@"ds" account:@"wa" password:@"dddddd"];
+    [HYSwiftKeyChain passwordForService:@"ds" account:@"wa"];
 }
 
 - (void)click:(UIButton *)btn {
@@ -55,8 +55,8 @@
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     
     NSLog(@"%@",[userDefaults objectForKey:@"name_preference"]);
-    
-    [btn setTitle:[userDefaults objectForKey:@"name_preference"] forState:UIControlStateNormal];
+    NSString *title = [NSString stringWithFormat:@"---%@", [userDefaults objectForKey:@"name_preference"]];
+    [btn setTitle:title forState:UIControlStateNormal];
 }
 
 
